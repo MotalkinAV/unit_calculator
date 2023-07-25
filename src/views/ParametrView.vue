@@ -1,11 +1,15 @@
 <template>
   <div class="products__parameters">
     <div
-      class="product__parameter"
+      class="product__parameter ps-1"
       v-for="(product, idx) in products"
       :key="idx"
     >
-      <div class="parameter__item" v-for="(item, key) in product" :key="key">
+      <div
+        class="parameter__item"
+        v-for="(parameter, key, index) in product"
+        :key="key"
+      >
         <p
           v-if="
             key === 'title' ||
@@ -14,14 +18,18 @@
             key === 'marginalProfitAmount'
           "
         >
-          <b>{{ item }}</b>
+          <b>{{ parameter }}</b>
         </p>
         <app-input
           v-else
           :datatype="key + idx"
-          :placeholder="item === undefined ? 'Введите значение' : item"
+          :placeholder="
+            parameter === undefined ? 'Введите значение' : parameter
+          "
           :error="errorAlert"
           v-model.number="product[key]"
+          @enter="moveToNextInput(index, product, idx)"
+          :ref="`${index}`"
         />
       </div>
       <div class="parameter__item">
@@ -32,7 +40,9 @@
         >
       </div>
       <div class="parameter__item">
-        <app-button :color="'btn-danger'" @action="deleteProduct(idx)"
+        <app-button
+          :color="'btn-danger'"
+          @action="deleteProduct(idx)"
           >Удалить товар</app-button
         >
       </div>
@@ -44,6 +54,10 @@
 import { appStore } from "../store/store.js";
 
 export default {
+  data() {
+    return {
+    }
+  },
   watch: {
     errorAlert(errorAlert) {
       appStore().setErrorAlert(errorAlert);
@@ -63,6 +77,21 @@ export default {
     }
   },
   methods: {
+    moveToNextInput(index, product, idx) {
+      const nextIndex = index;
+      console.log(nextIndex)
+      const inputs = this.$el.querySelectorAll("input");
+      console.log(inputs)
+      if (nextIndex < 3) {
+        inputs[nextIndex].focus();
+      } 
+      else if (nextIndex === 11) {
+        this.calculateProduct(product, idx)
+      } 
+      else if (nextIndex < inputs.length + 1) {
+        inputs[nextIndex - 1].focus();
+      }
+    },
     addError(errorAlert) {
       appStore().setErrorAlert(errorAlert);
     },
@@ -133,7 +162,7 @@ export default {
           totalCostOfMarketing -
           totalFullfilment;
 
-        product.revenue = 
+        product.revenue =
           ((product.byBack / 100) * product.price * product.orders).toFixed(2)
         product.marginalProfitUnit = (unitMarginalProfit).toFixed(2)
         product.marginalProfitAmount =

@@ -40,19 +40,6 @@ export default {
       appStore().setProductName('')
     }
   },
-
-
-
-
-
-
-
-
-
-
-
-
-
   components: { ModalView, ParameterTitleView, ParameterView, },
 };
 </script>

@@ -15,15 +15,11 @@ export const appStore = defineStore("App", {
       this.productName = name;
     },
     setErrorAlert(error) {
-      this.errorAlert.push(error)
+      this.errorAlert.push(error);
     },
     setShowModal(condition) {
-      this.showModal = condition
+      this.showModal = condition;
     },
-
-
-
-
     deleteProduct(idx) {
       this.products.splice(idx, 1);
     },
@@ -60,6 +56,5 @@ export const appStore = defineStore("App", {
         });
       }
     },
-
   },
 });

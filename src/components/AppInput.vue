@@ -8,6 +8,7 @@
       :placeholder="placeholder"
       :value="modelValue"
       @input="$emit('update:modelValue', $event.target.value)"
+      @keydown.enter="$emit('enter', $event.target)"
     />
     <small v-if="findShowText">Введите название товара</small>
   </div>
@@ -15,7 +16,7 @@
 
 <script>
 export default {
-  emits: ["update:modelValue"],
+  emits: ["update:modelValue","enter"],
   props: ["modelValue", "placeholder", "error", "datatype"],
   data() {
     return {};

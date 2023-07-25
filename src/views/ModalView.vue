@@ -8,6 +8,8 @@
           :error="errorAlert"
           :datatype="'nameDanger'"
           v-model.trim="productName"
+          @enter="addProduct"
+
         />
         <app-button :color="'btn-primary mt-3'" @action="addProduct"
           >Добавить товар</app-button
