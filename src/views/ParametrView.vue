@@ -2,49 +2,41 @@
   <div class="products__parameters">
     <div
       class="product__parameter ps-1"
-      v-for="(product, idx) in products"
-      :key="idx"
+      v-for="(product, productIdx) in products"
+      :key="productIdx"
     >
       <div
-        class="parameter__item"
-        v-for="(parameter, key, index) in product"
+        class="product__parameterItem"
+        v-for="(parameter, key, parameterIdx) in product"
         :key="key"
       >
-        <p
-          v-if="
-            key === 'title' ||
-            key === 'revenue' ||
-            key === 'marginalProfitUnit' ||
-            key === 'marginalProfitAmount'
-          "
+        <div
+          v-if="key === 'name'"
+          class="product__name d-flex justify-content-between flex-fill"
         >
-          <b>{{ parameter }}</b>
-        </p>
+          <span :class="{ 'bold-font': parameter.isСalculated }">{{
+            parameter.value
+          }}</span>
+          <app-button
+            :color="'btn-close'"
+            @action="deleteProduct(productIdx)"
+          ></app-button>
+        </div>
+        <span
+          v-else-if="parameter.isСalculated"
+          :class="{ 'bold-font': parameter.isСalculated }"
+        >
+          {{  product.marginalProfitAmount.value === "NaN" ? 'Заполните поля' : parameter.value }}
+        </span>
         <app-input
           v-else
-          :datatype="key + idx"
-          :placeholder="
-            parameter === undefined ? 'Введите значение' : parameter
-          "
-          :error="errorAlert"
-          v-model.number="product[key]"
-          @enter="moveToNextInput(index, product, idx)"
-          :ref="`${index}`"
+          :placeholder="parameter.value === undefined ? 'Введите значение' : parameter.value"
+          :error="errors[key + productIdx]"
+          v-model.number="parameter.value"
+          @enter="moveToNextInput(product, parameterIdx)"
+          @entered="calculateProduct(product, productIdx)"
+          :ref="`${parameterIdx}`"
         />
-      </div>
-      <div class="parameter__item">
-        <app-button
-          :color="'btn-primary'"
-          @action="calculateProduct(product, idx)"
-          >Рассчитать товар</app-button
-        >
-      </div>
-      <div class="parameter__item">
-        <app-button
-          :color="'btn-danger'"
-          @action="deleteProduct(idx)"
-          >Удалить товар</app-button
-        >
       </div>
     </div>
   </div>
@@ -54,18 +46,9 @@
 import { appStore } from "../store/store.js";
 
 export default {
-  data() {
-    return {
-    }
-  },
-  watch: {
-    errorAlert(errorAlert) {
-      appStore().setErrorAlert(errorAlert);
-    },
-  },
   computed: {
-    errorAlert() {
-      return appStore().errorAlert;
+    errors() {
+      return appStore().errors
     },
     products() {
       return appStore().products;
@@ -77,96 +60,82 @@ export default {
     }
   },
   methods: {
-    moveToNextInput(index, product, idx) {
-      const nextIndex = index;
-      console.log(nextIndex)
+    moveToNextInput(product, parameterIdx) {
+      const nextIndex = parameterIdx;
       const inputs = this.$el.querySelectorAll("input");
-      console.log(inputs)
-      if (nextIndex < 3) {
+      if (nextIndex < inputs.length) {
         inputs[nextIndex].focus();
-      } 
-      else if (nextIndex === 11) {
-        this.calculateProduct(product, idx)
-      } 
-      else if (nextIndex < inputs.length + 1) {
-        inputs[nextIndex - 1].focus();
       }
     },
-    addError(errorAlert) {
-      appStore().setErrorAlert(errorAlert);
+    addError(key, productIdx, message, isShowMessage) {
+      appStore().setError(key, productIdx, message, isShowMessage);
     },
     addProduct() {
       appStore().addProduct();
     },
-    deleteProduct(idx) {
-      appStore().deleteProduct(idx);
-      this.errorAlert.length = 0
+    deleteProduct(productIdx) {
+      appStore().deleteProduct(productIdx);
+      this.errors.length = 0;
     },
-    calculateProduct(product, idx) {
-      this.errorAlert.length = 0;
+    printPar(product) {
+      console.log(product.price.value);
+    },
+    calculateProduct(product, productIdx) {
+      appStore().errors = {};
 
       for (const key in product) {
-        if (
-          key === "title" ||
-          key === "revenue" ||
-          key === "marginalProfitUnit" ||
-          key === "marginalProfitAmount"
-        ) {
+        if (product[key].isСalculated) {
           continue;
         }
-        if (typeof product[key] !== "number") {
+        if (typeof product[key].value !== "number") {
           try {
             throw new Error("Значение должно быть числом");
           } catch (err) {
-            this.errorAlert.push({
-              type: key + idx,
-              text: err.message,
-              showText: false,
-            });
+            this.addError(key, productIdx, err.message, false);
           }
         }
-        if (product[key] < 0) {
+        if (product[key].value < 0) {
           try {
             throw new Error("Значение не может быть отрицательным");
           } catch (err) {
-            this.errorAlert.push({
-              type: key + idx,
-              text: err.message,
-              showText: false,
-            });
+            this.addError(key, productIdx, err.message, false);
           }
         }
-      }
-      if (this.errorAlert.length === 0) {
-        const totalOrders = product.price * product.orders;
-        const totalCostPrice = product.costPrice * product.orders;
-        const totalMarketCommission =
-          (product.marketCommission * (product.price * product.orders)) / 100;
-        const totalLogistic =
-          product.logistic * (1 - product.byBack / 100) * product.orders;
-        const totalReverseLogistics =
-          product.reverseLogistics *
-          (1 - product.byBack / 100) *
-          product.orders;
-        const totalTax = (product.price * product.orders * product.tax) / 100;
-        const totalCostOfMarketing = product.costOfMarketing * product.orders;
-        const totalFullfilment = product.fulfillment * product.orders;
+        if (Object.keys(appStore().errors).length === 0) {
+          const totalOrders = product.price.value * product.orders.value;
+          const totalCostPrice = product.costPrice.value * product.orders.value;
+          const totalMarketCommission =
+            (product.marketCommission.value *
+              (product.price.value * product.orders.value)) /
+            100;
+          const totalLogistic =
+            product.logistic.value *
+            (1 - product.byBack.value / 100) *
+            product.orders.value;
+          const totalReverseLogistics =
+            product.reverseLogistics.value *
+            (1 - product.byBack.value / 100) *
+            product.orders.value;
+          const totalTax =
+            (product.price.value * product.orders.value * product.tax.value) /
+            100;
+          const totalCostOfMarketing =
+            product.costOfMarketing.value * product.orders.value;
+          const totalFullfilment =
+            product.fulfillment.value * product.orders.value;
 
-        const unitMarginalProfit =
-          totalOrders -
-          totalCostPrice -
-          totalMarketCommission -
-          totalLogistic -
-          totalReverseLogistics -
-          totalTax -
-          totalCostOfMarketing -
-          totalFullfilment;
+          const unitMarginalProfit =
+            totalOrders -
+            totalCostPrice -
+            totalMarketCommission -
+            totalLogistic -
+            totalReverseLogistics -
+            totalTax -
+            totalCostOfMarketing -
+            totalFullfilment;
 
-        product.revenue =
-          ((product.byBack / 100) * product.price * product.orders).toFixed(2)
-        product.marginalProfitUnit = (unitMarginalProfit).toFixed(2)
-        product.marginalProfitAmount =
-          (unitMarginalProfit * ((product.byBack / 100) * product.orders)).toFixed(2)
+          product.marginalProfitAmount.value = unitMarginalProfit.toFixed(2);
+        }
       }
     },
   },
@@ -179,7 +148,7 @@ export default {
   overflow-x: auto;
 }
 
-.parameter__item {
+.product__parameterItem {
   width: 12rem;
   height: 3rem;
   display: flex;

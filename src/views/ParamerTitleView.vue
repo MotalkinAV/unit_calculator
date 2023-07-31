@@ -1,40 +1,22 @@
 <template>
   <div class="products__parameter-name">
-    <div
-      class="parameter-name__item"
-      v-for="(title, idx) in parameterTitles"
-      :key="idx"
-    >
-      <b v-if="idx === 0 || idx === 3 || idx === 12 || idx === 13">{{
-        title
-      }}</b>
-      <p v-else>{{ title }}</p>
+    <div class="parameter-name__item" v-for="(key, idx) in product" :key="idx">
+      <span
+        :class="{'bold-font' : key.isСalculated}"
+      >{{ key.parameterTitle }}</span>
     </div>
   </div>
 </template>
 
 <script>
+import { appStore } from "../store/store.js";
+
 export default {
-  data() {
-    return {
-      parameterTitles: [
-        "Товар",
-        "Цена, ₽",
-        "Заказы, кол-во",
-        "Выручка, ₽",
-        "Себестоимость, ₽/ед.",
-        "Выкуп, %",
-        "Комиссия МП, %",
-        "Логистика, ₽",
-        "Обратная логистика, ₽",
-        "Налог, %",
-        "Маркетинг, ₽/ед.",
-        "Фулфилмент, ₽",
-        "Маржинальная прибыль 1 шт, ₽",
-        "Маржинальная прибыль сумма, ₽",
-      ],
-    }
-  }
+  computed: {
+    product() {
+      return appStore().product;
+    },
+  },
 };
 </script>
 

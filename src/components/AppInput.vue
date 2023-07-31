@@ -2,43 +2,31 @@
   <div>
     <input
       class="form-control"
-      type="text"
-      :datatype="datatype"
-      :class="{ invalid: findError }"
+      :class=" {'is-invalid' : error}"
       :placeholder="placeholder"
+      :error="error"
       :value="modelValue"
       @input="$emit('update:modelValue', $event.target.value)"
       @keydown.enter="$emit('enter', $event.target)"
+      @change="$emit('entered', $event.target)"
+      :maxlength="maxlength"
     />
-    <small v-if="findShowText">Введите название товара</small>
+    <span
+      v-if="error && error.isShowMessage"
+      class="invalid-feedback"
+    >{{ error.message }}</span>
   </div>
 </template>
 
 <script>
 export default {
-  emits: ["update:modelValue","enter"],
-  props: ["modelValue", "placeholder", "error", "datatype"],
-  data() {
-    return {};
-  },
-  computed: {
-    findShowText() {
-      return this.error.some((obj) => obj.type === this.datatype && obj.showText === true);
-    },
-    findError() {
-      return this.error.some((obj) => obj.type === this.datatype);
-    },
-  },
+  emits: ["update:modelValue","enter","entered"],
+  props: ["modelValue", "placeholder", "error", "datatype","maxlength"],
 };
 </script>
 
 <style scoped>
-.invalid {
-  transition: 300ms !important;
-  border-color: red !important;
-  background: rgba(255, 0, 0, 0.115) !important;
-}
-small {
-  color: red;
+.invalid-feedback {
+  font-family: "Montserrat", sans-serif !important;
 }
 </style>

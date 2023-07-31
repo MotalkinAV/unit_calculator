@@ -16,7 +16,7 @@ export default {
   }},
   data() {
     return {
-      customStyle: ['btn', this.color, this.isTouchDevice === false ? '' : 'no-hover'],
+      customStyle: [this.color, this.isTouchDevice === false ? '' : 'no-hover'],
       isTouchDevice: false,
     };
   },
@@ -38,24 +38,18 @@ export default {
 </script>
 
 <style scoped>
-button {
+.btn {
   font-family: "Montserrat", sans-serif !important;
-  font-size: 16px !important;
-  font-weight: 400 !important;
   width: 12rem !important;
   height: 2rem !important;
   padding-block: 0rem !important;
-}
-.btn-close {
-  width: 1rem !important;
-  height: 1rem !important;
 }
 .btn-primary.no-hover:hover {
   background-color: var(--bs-primary) !important;
   border-color: var(--bs-primary) !important;
 }
 .btn-danger.no-hover:hover {
-  background-color: var(--bs-red) !important;
-  border-color: var(--bs-red) !important;
+  background-color: var(--bs-danger) !important;
+  border-color: var(--bs-danger) !important;
 }
 </style>
