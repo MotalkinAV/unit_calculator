@@ -1,44 +1,43 @@
 <template>
-  <div class="products__parameters">
+  <div
+    class="product__parameterItem"
+    v-for="(parameter, key, parameterIdx) in product"
+    :key="key"
+  >
     <div
-      class="product__parameter ps-1"
-      v-for="(product, productIdx) in products"
-      :key="productIdx"
+      v-if="key === 'name'"
+      class="product__name d-flex justify-content-between flex-fill"
     >
-      <div
-        class="product__parameterItem"
-        v-for="(parameter, key, parameterIdx) in product"
-        :key="key"
-      >
-        <div
-          v-if="key === 'name'"
-          class="product__name d-flex justify-content-between flex-fill"
-        >
-          <span :class="{ 'bold-font': parameter.isСalculated }">{{
-            parameter.value
-          }}</span>
-          <app-button
-            :color="'btn-close'"
-            @action="deleteProduct(productIdx)"
-          ></app-button>
-        </div>
-        <span
-          v-else-if="parameter.isСalculated"
-          :class="{ 'bold-font': parameter.isСalculated }"
-        >
-          {{  product.marginalProfitAmount.value === "NaN" ? 'Заполните поля' : parameter.value }}
-        </span>
-        <app-input
-          v-else
-          :placeholder="parameter.value === undefined ? 'Введите значение' : parameter.value"
-          :error="errors[key + productIdx]"
-          v-model.number="parameter.value"
-          @enter="moveToNextInput(product, parameterIdx)"
-          @entered="calculateProduct(product, productIdx)"
-          :ref="`${parameterIdx}`"
-        />
-      </div>
+      <span :class="{ 'bold-font': parameter.isСalculated }">{{
+        parameter.value
+      }}</span>
+      <app-button
+        :color="'btn-close'"
+        @action="deleteProduct(productIdx)"
+      ></app-button>
     </div>
+    <span
+      v-else-if="parameter.isСalculated"
+      :class="{ 'bold-font': parameter.isСalculated }"
+    >
+      {{
+        product.marginalProfitAmount.value === "NaN"
+          ? "Заполните поля"
+          : parameter.value
+      }}
+    </span>
+    <app-input
+      v-else
+      :placeholder="
+        parameter.value === undefined ? 'Введите значение' : parameter.value
+      "
+      :error="errors[key + productIdx]"
+      v-model.number="parameter.value"
+      @entered="calculateProduct(product, productIdx)"
+      @enter="moveToNextInput(parameterIdx)"
+      :focus="focusIndex"
+      :index="parameterIdx"
+    />
   </div>
 </template>
 
@@ -46,39 +45,30 @@
 import { appStore } from "../store/store.js";
 
 export default {
+  props: ["product", "productIdx"],
+  data() {
+    return {
+      focusIndex: "",
+    };
+  },
   computed: {
     errors() {
-      return appStore().errors
+      return appStore().errors;
     },
     products() {
       return appStore().products;
     },
   },
-  mounted() {
-    if (this.products.length === 0) {
-      this.addProduct();
-    }
-  },
   methods: {
-    moveToNextInput(product, parameterIdx) {
-      const nextIndex = parameterIdx;
-      const inputs = this.$el.querySelectorAll("input");
-      if (nextIndex < inputs.length) {
-        inputs[nextIndex].focus();
-      }
+    moveToNextInput(parameterIdx) {
+      this.focusIndex = parameterIdx + 1;
     },
     addError(key, productIdx, message, isShowMessage) {
       appStore().setError(key, productIdx, message, isShowMessage);
     },
-    addProduct() {
-      appStore().addProduct();
-    },
     deleteProduct(productIdx) {
       appStore().deleteProduct(productIdx);
       this.errors.length = 0;
-    },
-    printPar(product) {
-      console.log(product.price.value);
     },
     calculateProduct(product, productIdx) {
       appStore().errors = {};
@@ -143,11 +133,6 @@ export default {
 </script>
 
 <style scoped>
-.products__parameters {
-  display: flex;
-  overflow-x: auto;
-}
-
 .product__parameterItem {
   width: 12rem;
   height: 3rem;
