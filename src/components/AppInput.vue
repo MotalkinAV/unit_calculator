@@ -5,6 +5,7 @@
       :class="{ 'is-invalid': error }"
       :placeholder="placeholder"
       :error="error"
+      :type="datatype"
       :value="modelValue"
       @input="$emit('update:modelValue', $event.target.value)"
       @keydown.enter="$emit('enter', $event.target)"

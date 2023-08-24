@@ -5,14 +5,14 @@
       v-for="(product, productIdx) in products"
       :key="productIdx"
     >
-      <parametr-view :product="product" :productIdx="productIdx"></parametr-view>
+      <app-parameter :product="product" :productIdx="productIdx"></app-parameter>
     </div>
   </div>
 </template>
 
 <script>
 import { appStore } from "../store/store.js";
-import ParametrView from './ParametrView.vue';
+import AppParameter from './AppParameter.vue';
 
 export default {
   computed: {
@@ -30,7 +30,7 @@ export default {
       appStore().addProduct();
     },
   },
-  components: {ParametrView}
+  components: {AppParameter}
 };
 </script>
 

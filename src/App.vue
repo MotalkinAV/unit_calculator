@@ -1,11 +1,11 @@
 <template>
   <div class="container" id="app">
     <div class="row my-5">
-      <header-view />
-      <modal-view v-if="showModal"/>
+      <app-header />
+      <app-modal v-if="showModal"/>
       <div class="products d-flex">
-        <parameter-title-view />
-        <products-view/>
+        <app-parameter-title />
+        <app-products />
       </div>
     </div>
   </div>
@@ -13,10 +13,10 @@
 
 <script>
 import { appStore } from "./store/store.js";
-import HeaderView from "./views/HeaderView.vue";
-import ModalView from "./views/ModalView.vue";
-import ParameterTitleView from "./views/ParamerTitleView.vue";
-import ProductsView from './views/ProductsView.vue';
+import AppHeader from "./components/AppHeader.vue";
+import AppModal from "./components/AppModal.vue";
+import AppParameterTitle from "./components/AppParameterTitle.vue";
+import AppProducts from './components/AppProducts.vue';
 
 export default {
   computed: {
@@ -24,7 +24,7 @@ export default {
       return appStore().showModal;
     },
   },
-  components: { HeaderView, ModalView, ParameterTitleView, ProductsView, },
+  components: { AppHeader, AppModal, AppParameterTitle, AppProducts, },
 };
 </script>
 

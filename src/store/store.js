@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 
-const MAX_LENGTH_INPUT = 14;
+const MAX_LENGTH_INPUT = 30;
 const MAX_QUANTITY_OF_PRODUCTS = 4;
 const DEFAULT_PRODUCT_NAME = "Товар";
 const NEW_PRODUCT = () => {

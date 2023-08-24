@@ -7,6 +7,7 @@
         <h3 class="modal__title">Введите название товара</h3>
         <app-input
           :error="errors['nameErr']"
+          :datatype="'text'"
           v-model.trim="productName"
           @enter="addProduct"
           :maxlength="maxlengthInput"

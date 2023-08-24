@@ -8,7 +8,7 @@
       v-if="key === 'name'"
       class="product__name d-flex justify-content-between flex-fill"
     >
-      <span :class="{ 'bold-font': parameter.isСalculated }">{{
+      <span class="text-truncate" :class="{ 'bold-font': parameter.isСalculated }">{{
         parameter.value
       }}</span>
       <app-button
@@ -32,6 +32,7 @@
         parameter.value === undefined ? 'Введите значение' : parameter.value
       "
       :error="errors[key + productIdx]"
+      :datatype="'number'"
       v-model.number="parameter.value"
       @entered="calculateProduct(product, productIdx)"
       @enter="moveToNextInput(parameterIdx)"
@@ -139,5 +140,8 @@ export default {
   display: flex;
   align-items: center;
   margin-right: 1rem;
+}
+.product__name {
+  width: 12rem;
 }
 </style>
